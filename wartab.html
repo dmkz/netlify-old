@@ -5,6 +5,16 @@
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <title>Редирект на новый домен</title>
   <style>
+    /* Чтобы padding и border не вылезали за габариты элемента */
+    *, *::before, *::after {
+      box-sizing: border-box;
+    }
+    body {
+      margin: 0;
+      overflow-x: hidden; /* защищает от случайного горизонтального скролла */
+      font-family: Arial, sans-serif;
+    }
+
     /* Фон затемнения */
     #overlay {
       position: fixed;
@@ -30,18 +40,18 @@
       border-radius: 12px;
       box-shadow: 0 8px 20px rgba(0,0,0,0.2);
       opacity: 0;
-      transition: opacity 0.3s ease,
-                  transform 0.3s ease,
-                  bottom 0.3s ease;
+      transition:
+        opacity 0.3s ease,
+        transform 0.3s ease,
+        bottom 0.3s ease;
       z-index: 1001;
-      font-family: Arial, sans-serif;
     }
     #info-window.show {
       opacity: 1;
       transform: translate(-50%, -50%) scale(1);
     }
 
-    /* Содержимое */
+    /* Содержимое окна */
     #info-window h2 {
       margin: 0 0 1rem;
       font-size: 1.5rem;
@@ -73,27 +83,40 @@
       animation: pulse 2s ease-in-out infinite;
       transition: transform 0.2s ease;
     }
-    #go-button:hover { transform: scale(1.05); }
+    #go-button:hover {
+      transform: scale(1.05);
+    }
     @keyframes pulse {
       0%,100% { transform: scale(1); }
-      50% { transform: scale(1.03); }
+      50%    { transform: scale(1.03); }
     }
 
-    /* --- Мобильный bottom-sheet для портрета --- */
+    /* Мобильный bottom‑sheet для портретной ориентации */
     @media (max-width: 600px) {
       #info-window {
         /* сброс центрирования */
-        top: auto; left: 0; right: auto; bottom: -100%;
+        top: auto;
+        left: 0;
+        right: 0;
+        bottom: -100%;
         transform: none !important;
-        width: 100vw; max-width: 100%;
+
+        /* ширина вместе с padding = 100% экрана */
+        width: 100%;
+        max-width: 100%;
         border-radius: 12px 12px 0 0;
         padding: 1.5rem 1rem;
       }
       #info-window.show {
         bottom: 0;
       }
-      #info-window h2 { font-size: 1.25rem; }
-      #info-window p { font-size: 0.95rem; margin-bottom: 1rem; }
+      #info-window h2 {
+        font-size: 1.25rem;
+      }
+      #info-window p {
+        font-size: 0.95rem;
+        margin-bottom: 1rem;
+      }
       #go-button {
         width: 100%;
         padding: 1rem;
@@ -116,10 +139,10 @@
 
   <script>
     document.addEventListener('DOMContentLoaded', () => {
-      const url = new URL(location.href);
+      const url = new URL(window.location.href);
       const parts = url.hostname.split('.');
       const idx = parts.indexOf('netlify');
-      if (idx > 0) parts[idx-1] = 'heroes';
+      if (idx > 0) parts[idx - 1] = 'heroeswm';
       url.hostname = parts.join('.');
       const newUrl = url.toString();
 
@@ -128,7 +151,9 @@
       link.textContent = newUrl;
 
       document.getElementById('go-button')
-              .addEventListener('click', () => location.href = newUrl);
+              .addEventListener('click', () => {
+        window.location.href = newUrl;
+      });
 
       requestAnimationFrame(() => {
         document.getElementById('overlay').classList.add('show');
