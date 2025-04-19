@@ -19,53 +19,46 @@
       opacity: 1; visibility: visible;
     }
 
-    /* Общие стили окна */
+    /* Обычное модальное окно */
     #info-window {
       position: fixed;
+      top: 50%; left: 50%;
+      transform: translate(-50%, -50%) scale(0.8);
+      width: 400px; max-width: 90%;
       background: #fff;
+      padding: 2rem;
+      border-radius: 12px;
       box-shadow: 0 8px 20px rgba(0,0,0,0.2);
       opacity: 0;
-      transition: opacity 0.3s ease, transform 0.3s ease, bottom 0.3s ease;
+      transition: opacity 0.3s ease,
+                  transform 0.3s ease,
+                  bottom 0.3s ease;
       z-index: 1001;
       font-family: Arial, sans-serif;
     }
     #info-window.show {
       opacity: 1;
-    }
-
-    /* Десктоп‑версия: по центру */
-    #info-window {
-      top: 50%; left: 50%;
-      transform: translate(-50%, -50%) scale(0.8);
-      width: 400px; max-width: 90%;
-      border-radius: 12px;
-      padding: 2rem;
-    }
-    #info-window.show {
       transform: translate(-50%, -50%) scale(1);
     }
 
-    /* Заголовок */
+    /* Содержимое */
     #info-window h2 {
       margin: 0 0 1rem;
       font-size: 1.5rem;
       color: #4e54c8;
       text-align: center;
     }
-    /* Текст и ссылка */
     #info-window p {
       margin: 0 0 1.5rem;
       font-size: 1rem;
       color: #333;
-      word-break: break-all;
       text-align: center;
+      word-break: break-all;
     }
-    #new-url {
+    #info-window a {
       color: #4e54c8;
       text-decoration: none;
     }
-
-    /* Кнопка */
     #go-button {
       display: block;
       margin: 0 auto;
@@ -77,38 +70,30 @@
       border: none;
       border-radius: 6px;
       cursor: pointer;
-      outline: none;
       animation: pulse 2s ease-in-out infinite;
       transition: transform 0.2s ease;
     }
-    #go-button:hover {
-      transform: scale(1.05);
-    }
+    #go-button:hover { transform: scale(1.05); }
     @keyframes pulse {
       0%,100% { transform: scale(1); }
       50% { transform: scale(1.03); }
     }
 
-    /* --- Адаптация для мобильных портретных экранов --- */
+    /* --- Мобильный bottom-sheet для портрета --- */
     @media (max-width: 600px) {
       #info-window {
-        /* bottom-sheet */
-        top: auto; left: 0; bottom: -100%;
-        transform: translateY(0);
-        width: 100vw;
-        max-width: 100%;
+        /* сброс центрирования */
+        top: auto; left: 0; right: auto; bottom: -100%;
+        transform: none !important;
+        width: 100vw; max-width: 100%;
         border-radius: 12px 12px 0 0;
         padding: 1.5rem 1rem;
       }
       #info-window.show {
         bottom: 0;
       }
-      #info-window h2 {
-        font-size: 1.25rem;
-      }
-      #info-window p {
-        font-size: 0.95rem;
-      }
+      #info-window h2 { font-size: 1.25rem; }
+      #info-window p { font-size: 0.95rem; margin-bottom: 1rem; }
       #go-button {
         width: 100%;
         padding: 1rem;
@@ -131,24 +116,20 @@
 
   <script>
     document.addEventListener('DOMContentLoaded', () => {
-      // Собираем новый URL
-      const url = new URL(window.location.href);
+      const url = new URL(location.href);
       const parts = url.hostname.split('.');
       const idx = parts.indexOf('netlify');
-      if (idx > 0) parts[idx - 1] = 'heroeswm';
+      if (idx > 0) parts[idx-1] = 'heroes';
       url.hostname = parts.join('.');
       const newUrl = url.toString();
 
-      // Вставляем ссылку
       const link = document.getElementById('new-url');
       link.href = newUrl;
       link.textContent = newUrl;
 
-      // Кнопка
       document.getElementById('go-button')
-        .addEventListener('click', () => window.location.href = newUrl);
+              .addEventListener('click', () => location.href = newUrl);
 
-      // Плавный показ
       requestAnimationFrame(() => {
         document.getElementById('overlay').classList.add('show');
         document.getElementById('info-window').classList.add('show');
