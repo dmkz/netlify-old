@@ -7,13 +7,10 @@
     /* Фон затемнения */
     #overlay {
       position: fixed;
-      top: 0;
-      left: 0;
-      width: 100vw;
-      height: 100vh;
+      top: 0; left: 0;
+      width: 100vw; height: 100vh;
       background: rgba(0, 0, 0, 0.5);
-      opacity: 0;
-      visibility: hidden;
+      opacity: 0; visibility: hidden;
       transition: opacity 0.5s ease;
       z-index: 1000;
     }
@@ -21,35 +18,47 @@
     /* Окно сообщения */
     #info-window {
       position: fixed;
-      top: 50%;
-      left: 50%;
+      top: 50%; left: 50%;
       transform: translate(-50%, -50%) scale(0.8);
       background: #fff;
       padding: 2rem;
-      max-width: 90%;
-      width: 400px;
+      width: 90%;
+      max-width: 420px;
       border-radius: 12px;
       box-shadow: 0 8px 20px rgba(0,0,0,0.2);
       text-align: center;
       opacity: 0;
       transition: opacity 0.5s ease, transform 0.5s ease;
       z-index: 1001;
-      font-family: Arial, sans-serif;
+      font-family: 'Arial', sans-serif;
     }
 
     /* Плавное появление */
     #overlay.show {
-      opacity: 1;
-      visibility: visible;
+      opacity: 1; visibility: visible;
     }
     #info-window.show {
       opacity: 1;
       transform: translate(-50%, -50%) scale(1);
     }
 
+    /* Заголовок */
+    #info-window h2 {
+      margin: 0 0 1rem;
+      font-size: 1.5rem;
+      color: #4e54c8;
+    }
+
+    /* Текст ссылки */
+    #info-window p {
+      margin: 0.5rem 0 1.5rem;
+      font-size: 1rem;
+      color: #333;
+      word-break: break-all;
+    }
+
     /* Стили кнопки */
     #go-button {
-      margin-top: 1.5rem;
       padding: 0.75rem 1.5rem;
       font-size: 1rem;
       font-weight: bold;
@@ -59,7 +68,6 @@
       border-radius: 6px;
       cursor: pointer;
       outline: none;
-      transform: scale(1);
       transition: transform 0.2s ease;
       animation: pulse 2s ease-in-out infinite;
     }
@@ -69,15 +77,14 @@
 
     /* Анимация пульсации */
     @keyframes pulse {
-      0%, 100% { transform: scale(1); }
-      50%      { transform: scale(1.05); }
+      0%,100% { transform: scale(1); }
+      50%    { transform: scale(1.05); }
     }
 
     /* Ссылка */
     #new-url {
       color: #4e54c8;
       text-decoration: none;
-      word-break: break-all;
     }
   </style>
 </head>
@@ -86,39 +93,33 @@
   <!-- Оверлей и окно -->
   <div id="overlay"></div>
   <div id="info-window">
-    <p id="message"></p>
+    <h2>Сайт внезапно переехал!</h2>
+    <p>Теперь эта страница доступна по адресу:<br>
+      <a id="new-url" href="#">—</a>
+    </p>
     <button id="go-button">Перейти</button>
   </div>
 
   <script>
     document.addEventListener('DOMContentLoaded', () => {
-      // Получаем текущий URL
-      const currentUrl = new URL(window.location.href);
-      const hostParts = currentUrl.hostname.split('.');
-      // Находим индекс "netlify"
-      const idx = hostParts.indexOf('netlify');
-      if (idx > 0) {
-        // Заменяем предыдущий элемент на "heroes"
-        hostParts[idx - 1] = 'heroes';
-      }
-      // Собираем новый URL
-      currentUrl.hostname = hostParts.join('.');
-      const newUrl = currentUrl.toString();
+      const url = new URL(window.location.href);
+      const parts = url.hostname.split('.');
+      const idx = parts.indexOf('netlify');
+      if (idx > 0) parts[idx-1] = 'heroes';
+      url.hostname = parts.join('.');
+      const newUrl = url.toString();
 
-      // Вставляем текст сообщения
-      const msg = document.getElementById('message');
-      msg.innerHTML = `
-        Сайт внезапно переехал на новый домен!<br>
-        Теперь эта страница доступна по адресу:<br>
-        <a id="new-url" href="${newUrl}">${newUrl}</a>
-      `;
+      // Вставляем ссылку
+      const link = document.getElementById('new-url');
+      link.href = newUrl;
+      link.textContent = newUrl;
 
-      // Обработчик кнопки "Перейти"
+      // Перенаправление по кнопке
       document.getElementById('go-button').addEventListener('click', () => {
         window.location.href = newUrl;
       });
 
-      // Плавно показываем окно
+      // Показываем окно
       requestAnimationFrame(() => {
         document.getElementById('overlay').classList.add('show');
         document.getElementById('info-window').classList.add('show');
