@@ -28,21 +28,20 @@
       box-shadow: 0 8px 20px rgba(0,0,0,0.2);
       text-align: center;
       opacity: 0;
-      transition: opacity 0.5s ease, transform 0.5s ease;
-      z-index: 1001;
-      font-family: 'Arial', sans-serif;
-    }
 
-    /* Плавное появление */
-    #overlay.show {
-      opacity: 1; visibility: visible;
+      transition: opacity 0.3s ease,
+                  transform 0.3s ease,
+                  bottom 0.3s ease;
+      z-index: 1001;
+      font-family: Arial, sans-serif;
+
     }
     #info-window.show {
       opacity: 1;
       transform: translate(-50%, -50%) scale(1);
     }
 
-    /* Заголовок */
+
     #info-window h2 {
       margin: 0 0 1rem;
       font-size: 1.5rem;
@@ -71,20 +70,33 @@
       transition: transform 0.2s ease;
       animation: pulse 2s ease-in-out infinite;
     }
-    #go-button:hover {
-      transform: scale(1.1);
-    }
 
-    /* Анимация пульсации */
+    #go-button:hover { transform: scale(1.05); }
     @keyframes pulse {
       0%,100% { transform: scale(1); }
-      50%    { transform: scale(1.05); }
+      50% { transform: scale(1.03); }
     }
 
-    /* Ссылка */
-    #new-url {
-      color: #4e54c8;
-      text-decoration: none;
+    /* --- Мобильный bottom-sheet для портрета --- */
+    @media (max-width: 600px) {
+      #info-window {
+        /* сброс центрирования */
+        top: auto; left: 0; right: auto; bottom: -100%;
+        transform: none !important;
+        width: 100vw; max-width: 100%;
+        border-radius: 12px 12px 0 0;
+        padding: 1.5rem 1rem;
+      }
+      #info-window.show {
+        bottom: 0;
+      }
+      #info-window h2 { font-size: 1.25rem; }
+      #info-window p { font-size: 0.95rem; margin-bottom: 1rem; }
+      #go-button {
+        width: 100%;
+        padding: 1rem;
+        font-size: 1.1rem;
+      }
     }
   </style>
 </head>
@@ -102,10 +114,12 @@
 
   <script>
     document.addEventListener('DOMContentLoaded', () => {
-      const url = new URL(window.location.href);
+      const url = new URL(location.href);
       const parts = url.hostname.split('.');
       const idx = parts.indexOf('netlify');
+
       if (idx > 0) parts[idx-1] = 'dmkz';
+
       url.hostname = parts.join('.');
       const newUrl = url.toString();
 
@@ -114,10 +128,10 @@
       link.href = newUrl;
       link.textContent = newUrl;
 
-      // Перенаправление по кнопке
-      document.getElementById('go-button').addEventListener('click', () => {
-        window.location.href = newUrl;
-      });
+
+      document.getElementById('go-button')
+              .addEventListener('click', () => location.href = newUrl);
+
 
       // Показываем окно
       requestAnimationFrame(() => {
